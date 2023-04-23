@@ -3,7 +3,7 @@ import configparser
 
 def create_session(profile_name='default', region_name='us-west-2'):
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('../config.ini')
 
     access_key = config.get(profile_name, 'aws_access_key_id')
     secret_key = config.get(profile_name, 'aws_secret_access_key')

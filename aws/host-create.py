@@ -1,13 +1,5 @@
-import boto3
 import configparser
-import json
-import time 
-
-# Read AWS credentials from config.ini file
-config = configparser.ConfigParser()
-config.read('config.ini')
-aws_access_key_id = config['default']['aws_access_key_id']
-aws_secret_access_key = config['default']['aws_secret_access_key']
+import boto3
 
 # Read AWS credentials from config.ini file
 config = configparser.ConfigParser()

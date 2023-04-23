@@ -2,36 +2,41 @@ import boto3
 import aws_util
 
 class S3Bucket:
-    def __init__(self, bucket_name):
+    def __init__(self, session: boto3.Session, bucket_name: str):
+        self.s3 = session.client('s3')
         self.bucket_name = bucket_name
-        self.s3 = boto3.resource('s3')
-        self.bucket = self.s3.Bucket(bucket_name)
 
-    def list_contents(self):
-        print(f"\nContents of bucket {self.bucket_name}:")
-        for obj in self.bucket.objects.all():
-            print(obj.key)
+    def list_contents(self) -> List[str]:
+        response = self.s3.list_objects(Bucket=self.bucket_name)
+        if 'Contents' in response:
+            return [obj['Key'] for obj in response['Contents']]
+        else:
+            return []
 
-    def upload_file(self, filename, key):
+    def upload_file(self, filename: str, key: str) -> bool:
         try:
-            self.bucket.upload_file(filename, key)
-            print(f'Successfully uploaded {filename} to {self.bucket_name} with key {key}!')
+            self.s3.upload_file(filename, self.bucket_name, key)
+            return True
         except Exception as e:
             print(f'Error uploading file: {e}')
+            return False
 
-    def download_file(self, key, filename):
+    def download_file(self, key: str, filename: str) -> bool:
         try:
-            self.bucket.download_file(key, filename)
-            print(f'Successfully downloaded {key} from {self.bucket_name} to {filename}!')
+            self.s3.download_file(self.bucket_name, key, filename)
+            return True
         except Exception as e:
             print(f'Error downloading file: {e}')
+            return False
 
-    def delete_file(self, key):
+    def delete_file(self, key: str) -> bool:
         try:
-            self.bucket.Object(key).delete()
-            print(f'Successfully deleted {key} from {self.bucket_name}!')
+            self.s3.delete_object(Bucket=self.bucket_name, Key=key)
+            return True
         except Exception as e:
             print(f'Error deleting file: {e}')
+            return False
+
 
 
 def main():
